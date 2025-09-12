@@ -18,7 +18,7 @@
 	<Buttons name="Queries AI" icon={Bot} href="/chatai" />
 	<Buttons name="Todo" icon={NotepadText} href="/todo" />
 	<Buttons name="Schedule" icon={Calendar} href="/schedule" />
-	<Buttons name="Events" icon={PartyPopper} />
+	<Buttons name="Events" icon={PartyPopper} href="/events" />
 	<Buttons name="Appointment" icon={Pen} />
 	<Buttons name="Settings" icon={Settings} />
 </div>

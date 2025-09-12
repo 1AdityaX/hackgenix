@@ -1,0 +1,49 @@
+{
+  "events": [
+    {
+      "event_id": "e1",
+      "event_name": "AI and Robotics Workshop",
+      "date": "2025-10-15",
+      "start_time": "09:00",
+      "end_time": "17:00",
+      "venue": "AB1 102",
+      "details": "A full-day workshop on the latest advancements in AI and robotics."
+    },
+    {
+      "event_id": "e2",
+      "event_name": "Annual Tech Conference",
+      "date": "2025-11-05",
+      "start_time": "08:30",
+      "end_time": "18:00",
+      "venue": "AB2 207",
+      "details": "Keynote speakers from leading tech companies and startup showcases."
+    },
+    {
+      "event_id": "e3",
+      "event_name": "Gamer's Meetup",
+      "date": "2025-12-01",
+      "start_time": "14:00",
+      "end_time": "20:00",
+      "venue": "AB1 205",
+      "details": "Casual gaming and esports tournament for enthusiasts."
+    },
+    {
+      "event_id": "e4",
+      "event_name": "Cybersecurity Seminar",
+      "date": "2026-01-20",
+      "start_time": "10:00",
+      "end_time": "16:30",
+      "venue": "AB2 203",
+      "details": "Discussion on ethical hacking, data privacy, and network security."
+    },
+    {
+      "event_id": "e5",
+      "event_name": "Blockchain Development Bootcamp",
+      "date": "2026-02-10",
+      "start_time": "13:00",
+      "end_time": "17:00",
+      "venue": "AB2 207",
+      "details": "Hands-on training for building decentralized applications."
+    }
+  ]
+}
