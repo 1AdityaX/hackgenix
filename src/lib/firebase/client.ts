@@ -21,6 +21,7 @@ import {
 } from '$env/static/public';
 
 import { invalidateAll } from '$app/navigation';
+import { getFirestore, type Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
 	apiKey: PUBLIC_FIREBASE_API_KEY,
@@ -35,11 +36,13 @@ let currentUser = <User | null>null;
 let loading = <boolean>true;
 let app: FirebaseApp;
 let auth: import('firebase/auth').Auth;
+export let db: Firestore;
 
 function initializeFirebase() {
 	if (!browser) return;
 	app = initializeApp(firebaseConfig);
 	auth = getAuth(app);
+	db = getFirestore(app);
 
 	onAuthStateChanged(auth, async (user) => {
 		currentUser = user;
