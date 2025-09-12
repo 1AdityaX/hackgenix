@@ -1,0 +1,302 @@
+{
+    "Batch C": {
+        "Monday": [
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Software Engineering",
+                "teacher": "Gopinath",
+                "room": "AB2  -  205"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Alternate Dispute Resolution",
+                "teacher": "Mr. Sarath Mohan",
+                "room": "AB2  -  206"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Self - study",
+                "teacher": "Subba Rao",
+                "room": "AB2 -  209"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Environment and Sustainability",
+                "teacher": "Dr.Gopi Rethinaraj",
+                "room": "AB2  -  207"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Research Methodology",
+                "teacher": "Dr.Gopi Rathinaraj",
+                "room": "AB2  -  201"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Modern Political Thought",
+                "teacher": "Vivek Kumar Yadav",
+                "room": "AB2  -  209"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Basic and foundation of Biotechnology - Prof. Subbarao Toleti",
+                "teacher": null,
+                "room": "AB2  -  206"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Analytical methods and instrumentation - Sem 5 & Sem 7",
+                "teacher": "Manobala T",
+                "room": "AB2 - 201"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Calculus - Sec5 (Class starts from 12.15pm till 1.45pm)",
+                "teacher": "Beaula",
+                "room": "AB2 - 207"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Introduction to Programming - Sec6 (Class starts from 12.15pm till 1.45pm)",
+                "teacher": "Aravindh",
+                "room": "AB2  -  101"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Advanced Topics in Cryptography & Blockchain",
+                "teacher": " Gautham Sekar",
+                "room": "AB2  -  205"
+            }
+        ],
+        "Tuesday": [
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Environment and Sustainability - AI, SOB , SOT & SAS",
+                "teacher": "Dr.Gopi Rethinaraj",
+                "room": "AB2  -  207"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Computer Vision",
+                "teacher": "Ram Prasad K",
+                "room": "AB2  -  101"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Writing and Communications - Sec5",
+                "teacher": "Manoj",
+                "room": "AB2  -  202"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Introduction to Programming - Sec5",
+                "teacher": "Aravindh",
+                "room": "AB2  -  207"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Intellectual Property Rights",
+                "teacher": "Ms. Samudyata Sreenath",
+                "room": "AB2  -  206"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Chemistry",
+                "teacher": "Dr.Kalimuthu Karuppanan",
+                "room": "Biotech Lab"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Natural Language Processing",
+                "teacher": "Mariya",
+                "room": "AB1 - 104"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Interpretation of Statutes",
+                "teacher": "Dr. Jaisy George",
+                "room": "AB2  -  206"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Writing and Communications - Sec6",
+                "teacher": "Akshata Pai",
+                "room": "AB2  -  207"
+            }
+        ],
+        "Wednesday": [
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Modern Political Thought",
+                "teacher": "Vivek Kumar Yadav",
+                "room": "AB2  -  211"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Computer Vision",
+                "teacher": "Ram Prasad K",
+                "room": "AB2  -  203"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Basic and foundation of Biotechnology - Prof. Subbarao Toleti",
+                "teacher": null,
+                "room": "AB2 - 201"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Critical Thinking - Sec7",
+                "teacher": "Vivek Yadav",
+                "room": "AB1 - 104"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Introduction to Programming - Sec6",
+                "teacher": "Aravindh",
+                "room": "AB2 - 203"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Research Methodology From 10.30 am to 12.00pm",
+                "teacher": "Dr.Gopi Rethinaraj",
+                "room": "AB2  -  201"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Neuroanatomy _Sem 3 & Sem 5",
+                "teacher": "Anil",
+                "room": "AB2 - 206"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Calculus - Sec6",
+                "teacher": "Beaula",
+                "room": "AB2 - 203"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Critical Thinking - Sec5",
+                "teacher": "Megha",
+                "room": "AB2  -  203"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Analytical methods and instrumentation - Sem 5 & Sem 7",
+                "teacher": "Manobala T",
+                "room": "AB2 - 204"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Intergroup conflict & mental health - Sem 5 & Sem 7",
+                "teacher": "Sindhuja Sankaran",
+                "room": "AB2 - 201"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Writing and Communications (SOB, SOT & SAS) 1st year - Siddhanth",
+                "teacher": null,
+                "room": "AB1 - 104"
+            }
+        ],
+        "Thursday": [
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Writing and Communications - Sec6",
+                "teacher": "Akshata Pai",
+                "room": "AB2  -  203"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Self - Study",
+                "teacher": "Subba Rao",
+                "room": "AB2  -  206"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Calculus - Sec5",
+                "teacher": "Beaula",
+                "room": "AB2  -  203"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Intellectual Property Rights",
+                "teacher": "Ms. Samudyata Sreenath",
+                "room": "AB2  -  206"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Advanced Topics in Economics I",
+                "teacher": "Sahil",
+                "room": "AB1  -  202"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Introduction to Programming - Sec5",
+                "teacher": "Aravindh",
+                "room": "AB2  -  203"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "TinyML",
+                "teacher": "Ashok",
+                "room": "AB1 - 104"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Interpretation of Statutes",
+                "teacher": "Dr. Jaisy George",
+                "room": "AB2  -  206"
+            }
+        ],
+        "Friday": [
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Interpretation of Statutes",
+                "teacher": "Dr. Jaisy George",
+                "room": "AB2  -  205"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Writing and Communications - Sec5",
+                "teacher": "Manoj",
+                "room": "AB2 - 202"
+            },
+            {
+                "time": "02:00  -  03:25",
+                "subject": "Distributed Computing and Big Data",
+                "teacher": "Mrinalini",
+                "room": "AB2 - 207"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Social Psychology \u2013 Intergroup Relations _Sem3 & Sem 5 ( From 10.35 am to 12.05pm )",
+                "teacher": "Sindhuja",
+                "room": "AB2  -  203"
+            },
+            {
+                "time": "10:20  -  11:50",
+                "subject": "Software Engineering",
+                "teacher": "Gopinath",
+                "room": "AB2  -  202"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Advanced Topics in Cryptography & Blockchain",
+                "teacher": " Gautham Sekar",
+                "room": "AB2  -  205"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Calculus - Sec6 ( From 12.15 am to 01.45pm )",
+                "teacher": "Beaula",
+                "room": "AB2  - 203"
+            },
+            {
+                "time": "12:00  -  01:30",
+                "subject": "Calculus - Sec4",
+                "teacher": "Priyanka",
+                "room": "AB2 -  202"
+            }
+        ]
+    }
+}

@@ -1,0 +1,117 @@
+{
+  "student": {
+    "name": "K B Aditya",
+    "PRN": "123456789",
+    "department": "Computing and Data Science",
+    "batch": "Batch C",
+    "courses": [
+      {
+        "id": 1,
+        "subject": "Software Engineering",
+        "teacher": "Gopinath",
+        "schedule": [
+          {
+            "day": "Monday",
+            "time": "02:00 - 03:25",
+            "room": "AB2 - 205"
+          },
+          {
+            "day": "Friday",
+            "time": "10:20 - 11:50",
+            "room": "AB2 - 202"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "subject": "Modern Political Thought",
+        "teacher": "Vivek Kumar Yadav",
+        "schedule": [
+          {
+            "day": "Monday",
+            "time": "12:00 - 01:30",
+            "room": "AB2 - 209"
+          },
+          {
+            "day": "Wednesday",
+            "time": "02:00 - 03:25",
+            "room": "AB2 - 211"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "subject": "Advanced Topics in Cryptography & Blockchain",
+        "teacher": "Gautham Sekar",
+        "schedule": [
+          {
+            "day": "Monday",
+            "time": "12:00 - 01:30",
+            "room": "AB2 - 205"
+          },
+          {
+            "day": "Friday",
+            "time": "12:00 - 01:30",
+            "room": "AB2 - 205"
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "subject": "Computer Vision",
+        "teacher": "Ram Prasad K",
+        "schedule": [
+          {
+            "day": "Tuesday",
+            "time": "02:00 - 03:25",
+            "room": "AB2 - 101"
+          },
+          {
+            "day": "Wednesday",
+            "time": "02:00 - 03:25",
+            "room": "AB2 - 203"
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "subject": "Intellectual Property Rights",
+        "teacher": "Ms. Samudyata Sreenath",
+        "schedule": [
+          {
+            "day": "Tuesday",
+            "time": "10:20 - 11:50",
+            "room": "AB2 - 206"
+          },
+          {
+            "day": "Thursday",
+            "time": "10:20 - 11:50",
+            "room": "AB2 - 206"
+          }
+        ]
+      },
+      {
+        "id": 22,
+        "subject": "Interpretation of Statutes",
+        "teacher": "Dr. Jaisy George",
+        "schedule": [
+          {
+            "day": "Tuesday",
+            "time": "12:00 - 01:30",
+            "room": "AB2 - 206"
+          },
+          {
+            "day": "Thursday",
+            "time": "12:00 - 01:30",
+            "room": "AB2 - 206"
+          },
+          {
+            "day": "Friday",
+            "time": "02:00 - 03:25",
+            "room": "AB2 - 205"
+          }
+        ]
+      }
+    ]
+  }
+}
