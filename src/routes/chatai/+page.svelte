@@ -6,23 +6,46 @@
 	let loading = $state(false);
 
 	/** @param {CustomEvent<{text: string}>} event */
-	function handleSend(event) {
+	async function handleSend(event) {
 		const { text } = event.detail;
 		if (!text) return;
 
 		messages = [...messages, { type: 'user', content: text }];
 		loading = true;
 
-		setTimeout(() => {
+		try {
+			const response = await fetch(`http://localhost:8000/?query=${encodeURIComponent(text)}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+
+			const data = await response.json();
+
 			messages = [
 				...messages,
 				{
 					type: 'assistant',
-					content: `I received your message: "${text}". This is a demo response.`
+					content: data.text || 'Sorry, I could not process your request.'
 				}
 			];
+		} catch (error) {
+			console.error('Error calling agentic RAG server:', error);
+			messages = [
+				...messages,
+				{
+					type: 'assistant',
+					content: 'Sorry, I encountered an error while processing your request. Please try again.'
+				}
+			];
+		} finally {
 			loading = false;
-		}, 1000);
+		}
 	}
 </script>
 
@@ -46,7 +69,12 @@
 						<div
 							class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800"
 						>
-							<svg class="h-8 w-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<svg
+								class="h-8 w-8 text-zinc-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
@@ -64,7 +92,9 @@
 					<div class="flex {message.type === 'user' ? 'justify-end' : 'justify-start'}">
 						<div class="max-w-2xl {message.type === 'user' ? 'ml-12' : 'mr-12'}">
 							<div
-								class="flex {message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} items-start gap-3"
+								class="flex {message.type === 'user'
+									? 'flex-row-reverse'
+									: 'flex-row'} items-start gap-3"
 							>
 								<!-- Avatar -->
 								<div
@@ -113,6 +143,56 @@
 						</div>
 					</div>
 				{/each}
+
+				{#if loading}
+					<div class="flex justify-start">
+						<div class="mr-12 max-w-2xl">
+							<div class="flex flex-row items-start gap-3">
+								<!-- Avatar -->
+								<div
+									class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-700"
+								>
+									<svg
+										class="h-4 w-4 text-zinc-600 dark:text-zinc-300"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+										></path>
+									</svg>
+								</div>
+
+								<!-- Loading Message -->
+								<div class="flex-1">
+									<div
+										class="rounded-2xl border border-zinc-200 bg-white px-4 py-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800"
+									>
+										<div class="flex items-center gap-2">
+											<div class="flex space-x-1">
+												<div class="h-2 w-2 animate-bounce rounded-full bg-zinc-400"></div>
+												<div
+													class="h-2 w-2 animate-bounce rounded-full bg-zinc-400"
+													style="animation-delay: 0.1s"
+												></div>
+												<div
+													class="h-2 w-2 animate-bounce rounded-full bg-zinc-400"
+													style="animation-delay: 0.2s"
+												></div>
+											</div>
+											<span class="text-sm text-zinc-500 dark:text-zinc-400">AI is thinking...</span
+											>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				{/if}
 			{/if}
 		</div>
 	</div>
