@@ -22,6 +22,68 @@
 		schedule: Array<{ day: string; time: string; room: string }>;
 	}>;
 
+	function parseTimeToMinutesDaytime(time: string): number {
+		// Supports formats like "1:00", "13:00", "1:00 PM", "1 PM"
+		const m = time.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+		if (!m) return Number.MAX_SAFE_INTEGER;
+		let hour = parseInt(m[1] || '0', 10);
+		const minute = parseInt(m[2] || '0', 10);
+		const meridiem = (m[3] || '').toUpperCase();
+
+		if (meridiem === 'AM') {
+			if (hour === 12) hour = 0; // 12 AM -> 0
+		} else if (meridiem === 'PM') {
+			if (hour !== 12) hour += 12; // add 12 except for 12 PM
+		} else {
+			// No meridiem provided: assume day-time policy
+			// Treat 1..7 as PM (13..19). Others remain as-is.
+			if (hour >= 1 && hour <= 7) hour += 12;
+		}
+		return hour * 60 + minute;
+	}
+
+	function formatDisplayTimeDaytime(time: string): string {
+		const m = time.trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/i);
+		if (!m) return time;
+		let hour = parseInt(m[1] || '0', 10);
+		const minute = parseInt(m[2] || '0', 10);
+		let meridiem = (m[3] || '').toUpperCase();
+
+		if (!meridiem) {
+			// Infer meridiem for display: 1–7 and 12 as PM, 8–11 as AM
+			if (hour === 12 || (hour >= 1 && hour <= 7)) meridiem = 'PM';
+			else meridiem = 'AM';
+		}
+
+		// Normalize to h:mm AM/PM format
+		let h12 = hour;
+		if (meridiem === 'AM') {
+			if (hour === 0 || hour === 12) h12 = 12;
+		} else if (meridiem === 'PM') {
+			if (hour > 12) h12 = hour - 12;
+			if (hour === 12) h12 = 12;
+		}
+		const mm = minute.toString().padStart(2, '0');
+		return `${h12}:${mm} ${meridiem}`;
+	}
+
+	function extractTimeRange(raw: string): { start?: string; end?: string } {
+		// Handles variants like "02:00  -  03:25" or "02:00 - 03:25"
+		const match = raw.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+		if (match) {
+			return { start: match[1], end: match[2] };
+		}
+		return { start: raw.trim() };
+	}
+
+	function formatRangeDisplay(raw: string): string {
+		const { start, end } = extractTimeRange(raw);
+		if (start && end)
+			return `${formatDisplayTimeDaytime(start)} - ${formatDisplayTimeDaytime(end)}`;
+		if (start) return formatDisplayTimeDaytime(start);
+		return raw;
+	}
+
 	function getMyByDay(day: string) {
 		const items: Array<{ subject: string; teacher: string; time: string; room: string }> = [];
 		for (const course of myCourses) {
@@ -36,9 +98,23 @@
 				}
 			}
 		}
-		// Basic sort by start time if formatted as HH:MM
-		items.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
+		// Sort using normalized daytime minutes of range start
+		items.sort((a, b) => {
+			const sa = extractTimeRange(a.time).start ?? a.time;
+			const sb = extractTimeRange(b.time).start ?? b.time;
+			return parseTimeToMinutesDaytime(sa) - parseTimeToMinutesDaytime(sb);
+		});
 		return items;
+	}
+
+	function getAllByDay(day: string): TimetableEntry[] {
+		const entries = (allTimetable[day] || []).slice();
+		entries.sort((a, b) => {
+			const sa = extractTimeRange(a.time).start ?? a.time;
+			const sb = extractTimeRange(b.time).start ?? b.time;
+			return parseTimeToMinutesDaytime(sa) - parseTimeToMinutesDaytime(sb);
+		});
+		return entries;
 	}
 
 	function tabButtonClass(isActive: boolean): string {
@@ -96,32 +172,30 @@
 					</thead>
 					<tbody>
 						{#each daysOrder as day}
-							{#if allTimetable[day]}
-								{#each allTimetable[day] as entry}
-									<tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800">
-										<td
-											class="border-b border-zinc-100 px-3 py-2 font-semibold whitespace-nowrap text-zinc-700 dark:border-zinc-800 dark:text-zinc-300"
-											>{day}</td
-										>
-										<td
-											class="border-b border-zinc-100 px-3 py-2 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100"
-											>{entry.time}</td
-										>
-										<td
-											class="border-b border-zinc-100 px-3 py-2 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100"
-											>{entry.subject}</td
-										>
-										<td
-											class="border-b border-zinc-100 px-3 py-2 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100"
-											>{entry.teacher ?? '-'}</td
-										>
-										<td
-											class="border-b border-zinc-100 px-3 py-2 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100"
-											>{entry.room}</td
-										>
-									</tr>
-								{/each}
-							{/if}
+							{#each getAllByDay(day) as entry}
+								<tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800">
+									<td
+										class="border-b border-zinc-100 px-3 py-2 font-semibold whitespace-nowrap text-zinc-700 dark:border-zinc-800 dark:text-zinc-300"
+										>{day}</td
+									>
+									<td
+										class="border-b border-zinc-100 px-3 py-2 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100"
+										>{formatRangeDisplay(entry.time)}</td
+									>
+									<td
+										class="border-b border-zinc-100 px-3 py-2 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100"
+										>{entry.subject}</td
+									>
+									<td
+										class="border-b border-zinc-100 px-3 py-2 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100"
+										>{entry.teacher ?? '-'}</td
+									>
+									<td
+										class="border-b border-zinc-100 px-3 py-2 text-zinc-900 dark:border-zinc-800 dark:text-zinc-100"
+										>{entry.room}</td
+									>
+								</tr>
+							{/each}
 						{/each}
 					</tbody>
 				</table>
@@ -149,7 +223,7 @@
 									<div
 										class="flex flex-wrap items-center gap-1.5 text-xs text-zinc-700 dark:text-zinc-300"
 									>
-										<span>{item.time}</span>
+										<span>{formatRangeDisplay(item.time)}</span>
 										<span class="text-zinc-400 dark:text-zinc-500">•</span>
 										<span>{item.teacher}</span>
 										<span class="text-zinc-400 dark:text-zinc-500">•</span>
