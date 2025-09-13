@@ -1,7 +1,8 @@
 <script lang="ts">
-	import Sidebar from "$lib/components/Sidebar.svelte";
+	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { initializeFirebase, authState, signOut } from '$lib/firebase/client';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import '../app.css';
 	import { setContext } from 'svelte';
 
@@ -21,15 +22,18 @@
 		authState,
 		handleSignOut
 	});
+
+	// Check if current page is login page
+	let isLoginPage = $derived(page.route.id === '/login');
 </script>
 
 <main>
-    <div class="bg-zinc-50 dark:bg-zinc-950 min-h-screen flex">
-        <aside>
-            <Sidebar />
-        </aside>
+	<div class="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
+		{#if !isLoginPage}
+			<aside>
+				<Sidebar />
+			</aside>
+		{/if}
 		{@render children()}
-    </div>
+	</div>
 </main>
-
-

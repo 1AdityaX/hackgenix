@@ -54,14 +54,16 @@
 </svelte:head>
 
 <!-- Chat Area -->
-<div class="flex flex-1 flex-col">
+<div class="flex h-screen flex-1 flex-col">
 	<!-- Header -->
-	<header class="border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-900">
-		<h1 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Chat AI</h1>
+	<header
+		class="flex-shrink-0 border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-900"
+	>
+		<h1 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Personal Assisant</h1>
 	</header>
 
 	<!-- Messages Area -->
-	<div class="flex-1 overflow-y-auto p-6">
+	<div class="min-h-0 flex-1 overflow-y-auto p-6">
 		<div class="mx-auto max-w-4xl space-y-6">
 			{#if messages.length === 0}
 				<div class="flex h-full items-center justify-center">
@@ -198,7 +200,9 @@
 	</div>
 
 	<!-- Chat Input -->
-	<div class="border-t border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+	<div
+		class="flex-shrink-0 border-t border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900"
+	>
 		<div class="mx-auto max-w-4xl">
 			<ChatInput placeholder="Type your message..." onsend={handleSend} />
 		</div>

@@ -48,7 +48,7 @@
 	}
 </script>
 
-<main class="flex h-screen flex-col items-center justify-center bg-gray-50">
+<main class="flex w-full h-screen flex-col items-center justify-center bg-gray-50">
 	<div
 		class="login-box flex min-h-[400px] w-full max-w-[400px] flex-col items-center justify-center rounded-lg border border-gray-200 bg-white p-8 shadow-lg"
 	>
