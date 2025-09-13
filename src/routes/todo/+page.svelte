@@ -62,7 +62,7 @@
 			return;
 		}
 
-		const todosRef = collection(db, 'users', user.uid, 'todos');
+		const todosRef = collection(db, 'users', 'demo_user', 'todos');
 		const q = query(todosRef, orderBy('createdAt', 'desc'));
 		unsubscribe = onSnapshot(q, (snap) => {
 			const next: TodoItem[] = [];
@@ -94,7 +94,7 @@
 		if (!title) return;
 		const user = currentUser;
 		if (!user) return;
-		await addDoc(collection(db, 'users', user.uid, 'todos'), {
+		await addDoc(collection(db, 'users', "demo_user", 'todos'), {
 			title,
 			completed: false,
 			createdAt: serverTimestamp()
@@ -107,13 +107,13 @@
 		if (!user) return;
 		const current = todos.find((t) => t.id === id);
 		if (!current) return;
-		await updateDoc(doc(db, 'users', user.uid, 'todos', id), { completed: !current.completed });
+		await updateDoc(doc(db, 'users', 'demo_user', 'todos', id), { completed: !current.completed });
 	}
 
 	async function removeTodo(id: string) {
 		const user = currentUser;
 		if (!user) return;
-		await deleteDoc(doc(db, 'users', user.uid, 'todos', id));
+		await deleteDoc(doc(db, 'users', 'demo_user', 'todos', id));
 	}
 
 	async function clearCompleted() {
@@ -121,7 +121,7 @@
 		if (!user) return;
 		const completed = todos.filter((t) => t.completed);
 		for (const t of completed) {
-			await deleteDoc(doc(db, 'users', user.uid, 'todos', t.id));
+			await deleteDoc(doc(db, 'users', 'demo_user', 'todos', t.id));
 		}
 	}
 
