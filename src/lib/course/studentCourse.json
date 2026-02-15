@@ -28,11 +28,6 @@
         "teacher": "Vivek Kumar Yadav",
         "schedule": [
           {
-            "day": "Monday",
-            "time": "12:00 - 01:30",
-            "room": "AB2 - 209"
-          },
-          {
             "day": "Wednesday",
             "time": "02:00 - 03:25",
             "room": "AB2 - 211"
@@ -65,11 +60,6 @@
             "day": "Tuesday",
             "time": "02:00 - 03:25",
             "room": "AB2 - 101"
-          },
-          {
-            "day": "Wednesday",
-            "time": "02:00 - 03:25",
-            "room": "AB2 - 203"
           }
         ]
       },

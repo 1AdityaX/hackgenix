@@ -1,128 +1,63 @@
 <script lang="ts">
-	type Filter = 'all' | 'active' | 'completed';
-
-	interface TodoItem {
-		id: string;
-		title: string;
-		completed: boolean;
-		createdAt: number;
-	}
-
-	import { getContext } from 'svelte';
-	import { db, auth } from '$lib/firebase/client';
-	import { onAuthStateChanged } from 'firebase/auth';
-	import {
-		collection,
-		query,
-		orderBy,
-		onSnapshot,
-		addDoc,
-		updateDoc,
-		deleteDoc,
-		doc,
-		serverTimestamp
-	} from 'firebase/firestore';
+	import type { TodoItem } from '$lib/types';
+	import { page } from '$app/state';
 	import { Check } from '@lucide/svelte';
 
-	const todos = $state<TodoItem[]>([]);
+	type Filter = 'all' | 'active' | 'completed';
+
+	let todos = $state<TodoItem[]>([]);
 	let filter = $state<Filter>('all');
 	let newTitle = $state('');
 
-	const authCtx = getContext<{
-		authState: { user: any; loading: boolean };
-		handleSignOut: () => void;
-	}>('auth');
-	let currentUser = $state<any | null>(null);
-	let authLoading = $state(true);
-	let authUnsub: undefined | (() => void);
-	let unsubscribe: undefined | (() => void);
-
-	$effect.pre(() => {
-		if (authUnsub) return;
-		authUnsub = onAuthStateChanged(auth, (user) => {
-			currentUser = user;
-			authLoading = false;
-		});
-		return () => {
-			if (authUnsub) {
-				authUnsub();
-				authUnsub = undefined;
-			}
-		};
-	});
+	const user = $derived(page.data.user);
 
 	$effect(() => {
-		const user = currentUser;
-		if (!user) {
-			if (unsubscribe) {
-				unsubscribe();
-				unsubscribe = undefined;
-			}
-			todos.splice(0, todos.length);
-			return;
-		}
-
-		const todosRef = collection(db, 'users', 'demo_user', 'todos');
-		const q = query(todosRef, orderBy('createdAt', 'desc'));
-		unsubscribe = onSnapshot(q, (snap) => {
-			const next: TodoItem[] = [];
-			snap.forEach((docSnap) => {
-				const d = docSnap.data() as any;
-				next.push({
-					id: docSnap.id,
-					title: d?.title ?? '',
-					completed: !!d?.completed,
-					createdAt:
-						typeof d?.createdAt?.toMillis === 'function'
-							? d.createdAt.toMillis()
-							: (d?.createdAt ?? 0)
-				});
-			});
-			todos.splice(0, todos.length, ...next);
-		});
-
-		return () => {
-			if (unsubscribe) {
-				unsubscribe();
-				unsubscribe = undefined;
-			}
-		};
+		if (!user) return;
+		fetchTodos();
 	});
+
+	async function fetchTodos() {
+		const res = await fetch('/api/todos');
+		if (res.ok) {
+			todos = await res.json();
+		}
+	}
 
 	async function addTodo() {
 		const title = newTitle.trim();
-		if (!title) return;
-		const user = currentUser;
-		if (!user) return;
-		await addDoc(collection(db, 'users', "demo_user", 'todos'), {
-			title,
-			completed: false,
-			createdAt: serverTimestamp()
+		if (!title || !user) return;
+		const res = await fetch('/api/todos', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ title })
 		});
+		if (res.ok) {
+			const created = await res.json();
+			todos = [created, ...todos];
+		}
 		newTitle = '';
 	}
 
 	async function toggleTodo(id: string) {
-		const user = currentUser;
-		if (!user) return;
 		const current = todos.find((t) => t.id === id);
 		if (!current) return;
-		await updateDoc(doc(db, 'users', 'demo_user', 'todos', id), { completed: !current.completed });
+		await fetch(`/api/todos/${id}`, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ completed: !current.completed })
+		});
+		todos = todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t));
 	}
 
 	async function removeTodo(id: string) {
-		const user = currentUser;
-		if (!user) return;
-		await deleteDoc(doc(db, 'users', 'demo_user', 'todos', id));
+		await fetch(`/api/todos/${id}`, { method: 'DELETE' });
+		todos = todos.filter((t) => t.id !== id);
 	}
 
 	async function clearCompleted() {
-		const user = currentUser;
-		if (!user) return;
 		const completed = todos.filter((t) => t.completed);
-		for (const t of completed) {
-			await deleteDoc(doc(db, 'users', 'demo_user', 'todos', t.id));
-		}
+		await Promise.all(completed.map((t) => fetch(`/api/todos/${t.id}`, { method: 'DELETE' })));
+		todos = todos.filter((t) => !t.completed);
 	}
 
 	function visibleTodos(): TodoItem[] {
@@ -156,20 +91,14 @@
 			/>
 			<button
 				class="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
-				disabled={!newTitle.trim() || !currentUser}
+				disabled={!newTitle.trim() || !user}
 				onclick={addTodo}
 			>
 				Add
 			</button>
 		</div>
 
-		{#if authLoading}
-			<div
-				class="mt-8 rounded-lg border border-dashed border-zinc-200 p-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400"
-			>
-				Loading your session...
-			</div>
-		{:else if !currentUser}
+		{#if !user}
 			<div
 				class="mt-8 rounded-lg border border-dashed border-zinc-200 p-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400"
 			>

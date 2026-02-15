@@ -1,31 +1,39 @@
-import { adminAuth } from '$lib/firebase/server';
+import { auth } from '$lib/server/auth';
+import { svelteKitHandler } from 'better-auth/svelte-kit';
 import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const sessionCookie = event.cookies.get('session');
-
-	try {
-		const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie!, true);
-		event.locals.user = {
-			uid: decodedClaims.uid,
-			email: decodedClaims.email || null
-		};
-	} catch (e) {
-		event.locals.user = null;
-		if (sessionCookie) {
-			event.cookies.delete('session', { path: '/' });
-		}
+	// Let better-auth handle its own routes (/api/auth/*)
+	if (event.url.pathname.startsWith('/api/auth')) {
+		return svelteKitHandler({ event, resolve, auth });
 	}
-	const unprotectedRoutes = ['/login', '/signup', '/api/auth/session'];
 
-	const isProtected = !unprotectedRoutes.includes(event.url.pathname);
+	// Populate session for all other routes
+	const session = await auth.api.getSession({
+		headers: event.request.headers
+	});
+
+	if (session) {
+		event.locals.user = {
+			id: session.user.id,
+			email: session.user.email
+		};
+	} else {
+		event.locals.user = null;
+	}
+
+	// Route protection
+	const unprotectedRoutes = ['/login', '/signup'];
+	const isProtected =
+		!unprotectedRoutes.includes(event.url.pathname) &&
+		!event.url.pathname.startsWith('/api/');
 
 	if (isProtected && !event.locals.user) {
 		redirect(303, '/login');
 	}
 
-	if (!isProtected && event.locals.user) {
+	if (event.url.pathname === '/login' && event.locals.user) {
 		redirect(303, '/');
 	}
 

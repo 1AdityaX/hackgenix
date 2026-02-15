@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Sidebar from '$lib/components/Sidebar.svelte';
-	import { initializeFirebase, authState, signOut } from '$lib/firebase/client';
+	import { authClient } from '$lib/auth-client';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import '../app.css';
@@ -8,18 +8,13 @@
 
 	let { children } = $props();
 
-	$effect.pre(() => {
-		initializeFirebase();
-	});
-
 	function handleSignOut() {
-		signOut().then(() => {
+		authClient.signOut().then(() => {
 			goto('/login');
 		});
 	}
 
 	setContext('auth', {
-		authState,
 		handleSignOut
 	});
 

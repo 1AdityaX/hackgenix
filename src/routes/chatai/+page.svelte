@@ -14,11 +14,12 @@
 		loading = true;
 
 		try {
-			const response = await fetch(`http://localhost:8000/?query=${encodeURIComponent(text)}`, {
-				method: 'GET',
+			const response = await fetch('/api/chat', {
+				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
-				}
+				},
+				body: JSON.stringify({ query: text })
 			});
 
 			if (!response.ok) {
@@ -59,7 +60,7 @@
 	<header
 		class="flex-shrink-0 border-b border-zinc-200 bg-white px-6 py-4 dark:border-zinc-800 dark:bg-zinc-900"
 	>
-		<h1 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Personal Assisant</h1>
+		<h1 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Personal Assistant</h1>
 	</header>
 
 	<!-- Messages Area -->

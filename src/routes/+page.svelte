@@ -1,70 +1,20 @@
 <script lang="ts">
-	import { db, auth } from '$lib/firebase/client';
-	import { onAuthStateChanged } from 'firebase/auth';
-	import { collection, query, orderBy, onSnapshot, limit } from 'firebase/firestore';
 	import eventsData from '$lib/course/events.json';
+	import type { TodoItem, Event } from '$lib/types';
+	import { page } from '$app/state';
 
-	interface TodoItem {
-		id: string;
-		title: string;
-		completed: boolean;
-		createdAt: number;
-	}
-
-	type Event = {
-		event_id: string;
-		event_name: string;
-		date: string;
-		start_time: string;
-		end_time: string;
-		venue: string;
-		details: string;
-	};
-
-	const todos = $state<TodoItem[]>([]);
+	let todos = $state<TodoItem[]>([]);
 	const events: Event[] = eventsData.events;
-	let currentUser = $state<any | null>(null);
-	let authLoading = $state(true);
-	let authUnsub: undefined | (() => void);
-	let unsubscribe: undefined | (() => void);
 
-	// Get recent todos (limit to 3)
+	const user = $derived(page.data.user);
+
 	$effect(() => {
-		const user = currentUser;
-		if (!user) {
-			if (unsubscribe) {
-				unsubscribe();
-				unsubscribe = undefined;
-			}
-			todos.splice(0, todos.length);
-			return;
-		}
-
-		const todosRef = collection(db, 'users', 'demo_user', 'todos');
-		const q = query(todosRef, orderBy('createdAt', 'desc'), limit(3));
-		unsubscribe = onSnapshot(q, (snap) => {
-			const next: TodoItem[] = [];
-			snap.forEach((docSnap) => {
-				const d = docSnap.data() as any;
-				next.push({
-					id: docSnap.id,
-					title: d?.title ?? '',
-					completed: !!d?.completed,
-					createdAt:
-						typeof d?.createdAt?.toMillis === 'function'
-							? d.createdAt.toMillis()
-							: (d?.createdAt ?? 0)
-				});
+		if (!user) return;
+		fetch('/api/todos?limit=3')
+			.then((r) => r.json())
+			.then((data) => {
+				todos = data;
 			});
-			todos.splice(0, todos.length, ...next);
-		});
-
-		return () => {
-			if (unsubscribe) {
-				unsubscribe();
-				unsubscribe = undefined;
-			}
-		};
 	});
 
 	// Get upcoming events (limit to 3)
@@ -87,20 +37,6 @@
 		const hour12 = hour % 12 || 12;
 		return `${hour12}:${minutes} ${ampm}`;
 	}
-
-	$effect.pre(() => {
-		if (authUnsub) return;
-		authUnsub = onAuthStateChanged(auth, (user) => {
-			currentUser = user;
-			authLoading = false;
-		});
-		return () => {
-			if (authUnsub) {
-				authUnsub();
-				authUnsub = undefined;
-			}
-		};
-	});
 </script>
 
 <svelte:head>
@@ -133,11 +69,7 @@
 					</a>
 				</div>
 
-				{#if authLoading}
-					<div class="flex items-center justify-center py-8">
-						<div class="text-sm text-zinc-500 dark:text-zinc-400">Loading...</div>
-					</div>
-				{:else if !currentUser}
+				{#if !user}
 					<div class="py-8 text-center">
 						<div class="mb-2 text-sm text-zinc-500 dark:text-zinc-400">
 							Sign in to view your tasks

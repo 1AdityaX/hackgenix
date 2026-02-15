@@ -12,7 +12,7 @@
 	const batch = 'Batch C';
 	const daysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
-	let activeTab: 'all' | 'mine' = 'all';
+	let activeTab: 'all' | 'mine' = $state('all');
 
 	const allTimetable: Record<string, TimetableEntry[]> = (timetable as any)[batch] ?? {};
 	const myCourses = studentCourse.student.courses as Array<{
@@ -129,10 +129,10 @@
 
 <section class="mx-auto h-screen max-w-5xl overflow-auto p-4">
 	<header class="mb-4 flex gap-2 border-b border-zinc-200 dark:border-zinc-800">
-		<button class={tabButtonClass(activeTab === 'all')} on:click={() => (activeTab = 'all')}
+		<button class={tabButtonClass(activeTab === 'all')} onclick={() => (activeTab = 'all')}
 			>All Timetable</button
 		>
-		<button class={tabButtonClass(activeTab === 'mine')} on:click={() => (activeTab = 'mine')}
+		<button class={tabButtonClass(activeTab === 'mine')} onclick={() => (activeTab = 'mine')}
 			>My Timetable</button
 		>
 	</header>
