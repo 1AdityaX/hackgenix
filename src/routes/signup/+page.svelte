@@ -26,17 +26,6 @@
 			loading = false;
 		}
 	}
-
-	async function handleGoogleLogin() {
-		error = null;
-		loading = true;
-		try {
-			await authClient.signIn.social({ provider: 'google', callbackURL: '/' });
-		} catch (e: any) {
-			error = e.message;
-			loading = false;
-		}
-	}
 </script>
 
 <main class="flex h-screen w-full flex-col items-center justify-center bg-gray-50">
@@ -98,24 +87,6 @@
 				{loading ? 'Creating account...' : 'Sign Up'}
 			</button>
 		</form>
-
-		<div class="relative my-6 flex w-full items-center px-4">
-			<div class="flex-grow border-t border-gray-300"></div>
-			<span class="mx-4 flex-shrink text-gray-500">or</span>
-			<div class="flex-grow border-t border-gray-300"></div>
-		</div>
-
-		<div class="w-full px-4">
-			<button
-				onclick={handleGoogleLogin}
-				type="button"
-				disabled={loading}
-				class="flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white py-2 font-semibold text-gray-700 shadow-sm transition duration-200 ease-in-out hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
-			>
-				<img src="google_logo.svg" alt="Google logo" class="mr-2 h-5 w-5" />
-				{loading ? 'Signing up...' : 'Sign up with Google'}
-			</button>
-		</div>
 
 		<p class="mt-6 text-sm text-gray-500">
 			Already have an account?

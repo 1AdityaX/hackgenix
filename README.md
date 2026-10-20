@@ -1,6 +1,6 @@
 # HackGenix - Student Life Dashboard
 
-A student dashboard built with SvelteKit: todos, class timetable, and campus events, behind email/password or Google sign-in.
+A student dashboard built with SvelteKit: todos, class timetable, and campus events, behind email/password sign-in.
 
 ## Tech stack
 
@@ -12,7 +12,6 @@ A student dashboard built with SvelteKit: todos, class timetable, and campus eve
 
 - Node.js 22.17+ (see `.nvmrc`)
 - MongoDB, via Docker Compose or a local install
-- Google OAuth credentials (only for Google sign-in)
 
 ## Setup
 
@@ -33,18 +32,10 @@ The app runs at `http://localhost:5173`. Create an account on the sign-up page.
 | `BETTER_AUTH_SECRET`   | Random secret, min 32 chars. Generate with `openssl rand -base64 32` |
 | `BETTER_AUTH_URL`      | App URL (`http://localhost:5173` in dev)                             |
 | `VITE_BETTER_AUTH_URL` | Same value, exposed to the browser                                   |
-| `GOOGLE_CLIENT_ID`     | Google OAuth client ID                                               |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret                                           |
 | `MONGODB_URI`          | MongoDB connection string (default `mongodb://localhost:27017`)      |
 | `MONGODB_DB_NAME`      | Database name (default `hackgenix`)                                  |
 
 Server-side variables are declared in `src/env.js` and imported from `$app/env/private`.
-
-### Google OAuth
-
-1. Create OAuth 2.0 credentials in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
-2. Add `http://localhost:5173/api/auth/callback/google` as an authorized redirect URI.
-3. Put the client ID and secret in `.env`.
 
 ## Database
 
