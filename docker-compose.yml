@@ -1,10 +1,10 @@
 services:
   mongodb:
-    image: mongo:7
+    image: mongo:8
     container_name: hackgenix-mongo
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       MONGO_INITDB_DATABASE: hackgenix
     volumes:

@@ -1,52 +1,43 @@
 <script lang="ts">
-	import type { TodoItem } from '$lib/types';
-	import { page } from '$app/state';
+	import type { TodoItem } from '#lib/types.js';
 	import { Check } from '@lucide/svelte';
 
-	type Filter = 'all' | 'active' | 'completed';
+	const filters = ['all', 'active', 'completed'] as const;
 
 	let todos = $state<TodoItem[]>([]);
-	let filter = $state<Filter>('all');
+	let filter = $state<(typeof filters)[number]>('all');
 	let newTitle = $state('');
 
-	const user = $derived(page.data.user);
+	const visibleTodos = $derived(
+		filter === 'all' ? todos : todos.filter((t) => t.completed === (filter === 'completed'))
+	);
+	const remaining = $derived(todos.filter((t) => !t.completed).length);
 
 	$effect(() => {
-		if (!user) return;
-		fetchTodos();
+		fetch('/api/todos').then(async (res) => {
+			if (res.ok) todos = await res.json();
+		});
 	});
-
-	async function fetchTodos() {
-		const res = await fetch('/api/todos');
-		if (res.ok) {
-			todos = await res.json();
-		}
-	}
 
 	async function addTodo() {
 		const title = newTitle.trim();
-		if (!title || !user) return;
+		if (!title) return;
 		const res = await fetch('/api/todos', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ title })
 		});
-		if (res.ok) {
-			const created = await res.json();
-			todos = [created, ...todos];
-		}
+		if (res.ok) todos = [await res.json(), ...todos];
 		newTitle = '';
 	}
 
-	async function toggleTodo(id: string) {
-		const current = todos.find((t) => t.id === id);
-		if (!current) return;
-		await fetch(`/api/todos/${id}`, {
+	async function toggleTodo(todo: TodoItem) {
+		await fetch(`/api/todos/${todo.id}`, {
 			method: 'PATCH',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ completed: !current.completed })
+			body: JSON.stringify({ completed: !todo.completed })
 		});
-		todos = todos.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t));
+		todos = todos.map((t) => (t.id === todo.id ? { ...t, completed: !t.completed } : t));
 	}
 
 	async function removeTodo(id: string) {
@@ -55,19 +46,7 @@
 	}
 
 	async function clearCompleted() {
-		const completed = todos.filter((t) => t.completed);
-		await Promise.all(completed.map((t) => fetch(`/api/todos/${t.id}`, { method: 'DELETE' })));
-		todos = todos.filter((t) => !t.completed);
-	}
-
-	function visibleTodos(): TodoItem[] {
-		if (filter === 'active') return todos.filter((t) => !t.completed);
-		if (filter === 'completed') return todos.filter((t) => t.completed);
-		return todos;
-	}
-
-	function remainingCount(): number {
-		return todos.filter((t) => !t.completed).length;
+		await Promise.all(todos.filter((t) => t.completed).map((t) => removeTodo(t.id)));
 	}
 </script>
 
@@ -91,20 +70,14 @@
 			/>
 			<button
 				class="rounded-md bg-zinc-900 px-3 py-1.5 text-sm text-white disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
-				disabled={!newTitle.trim() || !user}
+				disabled={!newTitle.trim()}
 				onclick={addTodo}
 			>
 				Add
 			</button>
 		</div>
 
-		{#if !user}
-			<div
-				class="mt-8 rounded-lg border border-dashed border-zinc-200 p-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400"
-			>
-				Sign in to manage your tasks.
-			</div>
-		{:else if todos.length === 0}
+		{#if todos.length === 0}
 			<div
 				class="mt-8 rounded-lg border border-dashed border-zinc-200 p-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:text-zinc-400"
 			>
@@ -112,52 +85,38 @@
 			</div>
 		{:else}
 			<div class="mt-6 flex items-center justify-between">
-				<div class="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
-					<span>{remainingCount()}</span>
-					<span>{remainingCount() === 1 ? 'task' : 'tasks'} left</span>
-				</div>
+				<span class="text-xs text-zinc-500 dark:text-zinc-400">
+					{remaining}
+					{remaining === 1 ? 'task' : 'tasks'} left
+				</span>
 				<div
 					class="flex items-center gap-1 rounded-md border border-zinc-200 bg-zinc-100 p-1 dark:border-zinc-800 dark:bg-zinc-900"
 				>
-					<button
-						class="rounded px-2 py-1 text-xs [@media(hover:hover)]:hover:bg-white dark:[@media(hover:hover)]:hover:bg-zinc-800 {filter ===
-						'all'
-							? 'bg-white dark:bg-zinc-800'
-							: ''}"
-						class:font-medium={filter === 'all'}
-						onclick={() => (filter = 'all')}>All</button
-					>
-					<button
-						class="rounded px-2 py-1 text-xs [@media(hover:hover)]:hover:bg-white dark:[@media(hover:hover)]:hover:bg-zinc-800 {filter ===
-						'active'
-							? 'bg-white dark:bg-zinc-800'
-							: ''}"
-						class:font-medium={filter === 'active'}
-						onclick={() => (filter = 'active')}>Active</button
-					>
-					<button
-						class="rounded px-2 py-1 text-xs [@media(hover:hover)]:hover:bg-white dark:[@media(hover:hover)]:hover:bg-zinc-800 {filter ===
-						'completed'
-							? 'bg-white dark:bg-zinc-800'
-							: ''}"
-						class:font-medium={filter === 'completed'}
-						onclick={() => (filter = 'completed')}>Completed</button
-					>
+					{#each filters as f}
+						<button
+							class="rounded px-2 py-1 text-xs capitalize [@media(hover:hover)]:hover:bg-white dark:[@media(hover:hover)]:hover:bg-zinc-800 {filter ===
+							f
+								? 'bg-white font-medium dark:bg-zinc-800'
+								: ''}"
+							onclick={() => (filter = f)}
+						>
+							{f}
+						</button>
+					{/each}
 				</div>
 			</div>
 
 			<ul
 				class="mt-3 divide-y divide-zinc-200 overflow-hidden rounded-lg border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900"
 			>
-				{#each visibleTodos() as todo (todo.id)}
+				{#each visibleTodos as todo (todo.id)}
 					<li class="flex items-center gap-3 px-4 py-3">
-						<!-- Custom square checkbox with tick -->
 						<input
 							id={`todo-${todo.id}`}
 							type="checkbox"
 							class="peer sr-only"
 							checked={todo.completed}
-							onchange={() => toggleTodo(todo.id)}
+							onchange={() => toggleTodo(todo)}
 						/>
 						<label
 							for={`todo-${todo.id}`}
@@ -167,29 +126,30 @@
 								class="h-3.5 w-3.5 text-white opacity-0 transition-opacity duration-150 peer-checked:opacity-100 dark:text-zinc-900"
 							/>
 						</label>
-						<div class="flex-1 text-sm">
-							<p
-								class="truncate {todo.completed
-									? 'text-zinc-400 line-through dark:text-zinc-500'
-									: ''}"
-							>
-								{todo.title}
-							</p>
-						</div>
+						<p
+							class="flex-1 truncate text-sm {todo.completed
+								? 'text-zinc-400 line-through dark:text-zinc-500'
+								: ''}"
+						>
+							{todo.title}
+						</p>
 						<button
 							class="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-							aria-label="Delete"
-							onclick={() => removeTodo(todo.id)}>Delete</button
+							onclick={() => removeTodo(todo.id)}
 						>
+							Delete
+						</button>
 					</li>
 				{/each}
 			</ul>
 
-			<div class="mt-3 flex items-center justify-end">
+			<div class="mt-3 flex justify-end">
 				<button
 					class="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
-					onclick={clearCompleted}>Clear completed</button
+					onclick={clearCompleted}
 				>
+					Clear completed
+				</button>
 			</div>
 		{/if}
 	</div>

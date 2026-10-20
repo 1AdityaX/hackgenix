@@ -1,221 +1,103 @@
 # HackGenix - Student Life Dashboard
 
-A student life management dashboard built with SvelteKit, featuring AI-powered assistance, task management, schedule viewing, and event tracking.
+A student dashboard built with SvelteKit: todos, class timetable, and campus events, behind email/password or Google sign-in.
 
-## Tech Stack
+## Tech stack
 
-**Frontend**
-- SvelteKit 2 + Svelte 5 (runes)
-- Tailwind CSS 4
-- TypeScript
-- Lucide icons
-
-**Authentication**
-- [better-auth](https://www.better-auth.com/) (email/password + Google OAuth)
-
-**Database**
+- SvelteKit 3, Svelte 5, Vite 8, Tailwind CSS 4, TypeScript
+- [better-auth](https://www.better-auth.com/) for authentication
 - MongoDB
-
-**AI Backend**
-- Python FastAPI server
-- Google Gemini 2.0 Flash with function calling (agentic RAG)
 
 ## Prerequisites
 
-- Node.js 18+
-- Python 3.11+
-- Docker & Docker Compose (recommended) or MongoDB installed locally
-- Google Gemini API key
-- Google OAuth credentials (for Google sign-in)
+- Node.js 22.17+ (see `.nvmrc`)
+- MongoDB, via Docker Compose or a local install
+- Google OAuth credentials (only for Google sign-in)
 
 ## Setup
 
-### 1. Clone and install
-
 ```bash
-git clone <repo-url>
-cd hackgenix
 npm install
-```
-
-### 2. Configure environment variables
-
-Copy the example env files and fill in your values:
-
-```bash
-cp .env.example .env
-cp server/.env.example server/.env
-```
-
-**`.env`** (SvelteKit):
-
-| Variable | Description |
-|----------|-------------|
-| `BETTER_AUTH_SECRET` | Random secret, min 32 chars. Generate with `openssl rand -base64 32` |
-| `BETTER_AUTH_URL` | Your app URL (`http://localhost:5173` for dev) |
-| `VITE_BETTER_AUTH_URL` | Same as above (exposed to client) |
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
-| `MONGODB_URI` | MongoDB connection string (`mongodb://localhost:27017`) |
-| `MONGODB_DB_NAME` | Database name (`hackgenix`) |
-| `PRIVATE_RAG_SERVER_URL` | Python backend URL (`http://localhost:8000`) |
-
-**`server/.env`** (Python backend):
-
-| Variable | Description |
-|----------|-------------|
-| `GEMINI_API_KEY` | Google Gemini API key |
-| `MONGODB_URI` | Same MongoDB URI as above |
-| `MONGODB_DB_NAME` | Same database name as above |
-| `CORS_ORIGINS` | Allowed origins (default: `http://localhost:5173,http://localhost:4173`) |
-
-### 3. Set up Google OAuth
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-2. Create OAuth 2.0 credentials
-3. Add authorized redirect URI: `http://localhost:5173/api/auth/callback/google`
-4. Copy the Client ID and Client Secret to your `.env`
-
-### 4. Start MongoDB
-
-**Option A: Docker Compose (recommended)**
-
-```bash
-docker compose up -d
-```
-
-This starts a MongoDB 7 container on port 27017 with persistent volume storage.
-
-**Option B: Homebrew (macOS)**
-
-```bash
-brew services start mongodb-community
-```
-
-**Option C: System service (Linux)**
-
-```bash
-sudo systemctl start mongod
-```
-
-### 5. Set up the database
-
-**For local development** (creates collections, indexes, and mock data):
-
-```bash
-mongosh mongodb://localhost:27017/hackgenix scripts/db-setup-local.js
-```
-
-Or if using Docker:
-
-```bash
-docker exec -i hackgenix-mongo mongosh hackgenix < scripts/db-setup-local.js
-```
-
-This creates a test account you can use immediately:
-- **Email:** `student@hackgenix.dev`
-- **Password:** `password123`
-
-**For production** (creates collections and indexes only, no data):
-
-```bash
-mongosh "mongodb+srv://user:pass@your-cluster.mongodb.net/hackgenix" scripts/db-setup-prod.js
-```
-
-### 6. Set up the Python backend
-
-```bash
-cd server
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-## Running
-
-Start both the SvelteKit frontend and Python backend:
-
-```bash
-# Terminal 1 - Frontend
+cp .env.example .env   # then fill in the values
+docker compose up -d   # starts MongoDB 8 on port 27017
+mongosh mongodb://localhost:27017/hackgenix scripts/db-setup.js
 npm run dev
-
-# Terminal 2 - Python backend
-cd server
-source venv/bin/activate
-python agentic_rag.py
 ```
 
-The app will be available at `http://localhost:5173`.
+The app runs at `http://localhost:5173`. Create an account on the sign-up page.
+
+### Environment variables
+
+| Variable               | Description                                                          |
+| ---------------------- | -------------------------------------------------------------------- |
+| `BETTER_AUTH_SECRET`   | Random secret, min 32 chars. Generate with `openssl rand -base64 32` |
+| `BETTER_AUTH_URL`      | App URL (`http://localhost:5173` in dev)                             |
+| `VITE_BETTER_AUTH_URL` | Same value, exposed to the browser                                   |
+| `GOOGLE_CLIENT_ID`     | Google OAuth client ID                                               |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret                                           |
+| `MONGODB_URI`          | MongoDB connection string (default `mongodb://localhost:27017`)      |
+| `MONGODB_DB_NAME`      | Database name (default `hackgenix`)                                  |
+
+Server-side variables are declared in `src/env.js` and imported from `$app/env/private`.
+
+### Google OAuth
+
+1. Create OAuth 2.0 credentials in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
+2. Add `http://localhost:5173/api/auth/callback/google` as an authorized redirect URI.
+3. Put the client ID and secret in `.env`.
 
 ## Database
 
-### Collections
+`scripts/db-setup.js` creates the indexes the app relies on and is safe to re-run against any environment. With Docker:
 
-| Collection | Purpose |
-|------------|---------|
-| `user` | User profiles (managed by better-auth) |
-| `session` | Active sessions with TTL expiry (managed by better-auth) |
-| `account` | Auth provider credentials — email/password, Google OAuth (managed by better-auth) |
-| `verification` | Email verification tokens with TTL (managed by better-auth) |
-| `todos` | User tasks (managed by the app) |
-
-### Scripts
-
-| Script | What it does |
-|--------|-------------|
-| `scripts/db-setup-local.js` | Drops & recreates all collections, creates indexes, inserts a mock user and sample todos |
-| `scripts/db-setup-prod.js` | Creates collections and indexes if they don't exist. Inserts nothing. Safe to re-run. |
-
-## Project Structure
-
-```
-hackgenix/
-├── src/
-│   ├── lib/
-│   │   ├── server/
-│   │   │   ├── auth.ts          # better-auth server config
-│   │   │   └── db.ts            # MongoDB connection
-│   │   ├── components/          # Svelte components
-│   │   ├── course/              # JSON data (timetable, events, courses)
-│   │   ├── auth-client.ts       # better-auth client
-│   │   └── types.ts             # TypeScript interfaces
-│   ├── routes/
-│   │   ├── +page.svelte         # Dashboard
-│   │   ├── login/               # Login page
-│   │   ├── signup/              # Signup page
-│   │   ├── todo/                # Todo management
-│   │   ├── events/              # Events listing
-│   │   ├── schedule/            # Timetable view
-│   │   ├── chatai/              # AI assistant
-│   │   └── api/
-│   │       ├── todos/           # Todo CRUD API
-│   │       └── chat/            # Chat proxy to Python backend
-│   └── hooks.server.ts          # Auth middleware
-├── server/
-│   ├── agentic_rag.py           # FastAPI + Gemini RAG server
-│   └── requirements.txt         # Python dependencies
-├── scripts/
-│   ├── db-setup-local.js        # Local dev DB setup (schema + mock data)
-│   └── db-setup-prod.js         # Production DB setup (schema only)
-├── docker-compose.yml           # MongoDB container
-└── static/                      # Static assets
+```bash
+docker exec -i hackgenix-mongo mongosh hackgenix < scripts/db-setup.js
 ```
 
-## Features
+| Collection                                   | Purpose                |
+| -------------------------------------------- | ---------------------- |
+| `user`, `session`, `account`, `verification` | Managed by better-auth |
+| `todos`                                      | User tasks             |
 
-- **Authentication**: Email/password and Google OAuth via better-auth
-- **Todo Management**: Create, complete, and delete tasks
-- **Schedule**: View your timetable by day and batch
-- **Events**: Browse upcoming university events
-- **AI Assistant**: Chat with an AI that can access your schedule, todos, and campus data
-- **Dark Mode**: Full dark theme support
+## Timetable data
+
+The schedule page reads `src/lib/course/timetable.json` and `studentCourse.json`. To regenerate the timetable from the CSV exports in `scripts/data/`:
+
+```bash
+python3 scripts/parse_csv_timetable.py
+```
+
+## Project structure
+
+```
+src/
+├── env.js                 # server env var declarations
+├── hooks.server.ts        # session lookup and route protection
+├── lib/
+│   ├── auth-client.ts     # better-auth browser client
+│   ├── server/            # better-auth config, MongoDB client
+│   ├── components/        # Sidebar
+│   ├── course/            # timetable, courses, events JSON
+│   ├── format.ts          # date/time formatting
+│   └── types.ts
+└── routes/
+    ├── +page.svelte       # dashboard
+    ├── login/, signup/
+    ├── todo/, schedule/, events/, notifications/
+    └── api/todos/         # todo CRUD
+```
 
 ## Scripts
 
 ```bash
-npm run dev       # Start dev server
-npm run build     # Production build
-npm run preview   # Preview production build
-npm run check     # TypeScript checking
-npm run format    # Format code with Prettier
+npm run dev       # dev server
+npm run build     # production build
+npm run preview   # preview the build
+npm run check     # type-check
+npm run format    # format with Prettier
+npm run lint      # check formatting
 ```
+
+## Updating dependencies
+
+Dependabot opens weekly PRs for npm packages and monthly ones for the Mongo image. Manually: `npm outdated`, `npm update`, and `npx sv migrate <migration>` for SvelteKit or Svelte majors. SvelteKit is configured in `vite.config.js`; there is no `svelte.config.js` since SvelteKit 3.

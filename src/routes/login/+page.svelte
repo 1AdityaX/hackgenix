@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { authClient } from '$lib/auth-client';
+	import { authClient } from '#lib/auth-client.js';
 	import { goto } from '$app/navigation';
 
 	let email = $state('');
@@ -38,7 +38,7 @@
 	}
 </script>
 
-<main class="flex w-full h-screen flex-col items-center justify-center bg-gray-50">
+<main class="flex h-screen w-full flex-col items-center justify-center bg-gray-50">
 	<div
 		class="login-box flex min-h-[400px] w-full max-w-[400px] flex-col items-center justify-center rounded-lg border border-gray-200 bg-white p-8 shadow-lg"
 	>
@@ -104,7 +104,7 @@
 
 		<p class="mt-6 text-sm text-gray-500">
 			Don't have an account?
-			<a href="/signup" class="text-violet-600 hover:text-violet-700 font-medium">Sign up</a>
+			<a href="/signup" class="font-medium text-violet-600 hover:text-violet-700">Sign up</a>
 		</p>
 	</div>
 </main>

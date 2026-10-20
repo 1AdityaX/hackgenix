@@ -1,11 +1,11 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
+import type { RequestHandler } from '@sveltejs/kit';
+import { db } from '#lib/server/db.js';
 import { ObjectId } from 'mongodb';
 
 const todos = db.collection('todos');
 
 export const PATCH: RequestHandler = async ({ params, request, locals }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!locals.user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
 	const body = await request.json();
 	const updates: Record<string, unknown> = {};
@@ -13,7 +13,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 	if (typeof body.title === 'string') updates.title = body.title;
 
 	if (Object.keys(updates).length === 0) {
-		return json({ error: 'No valid fields to update' }, { status: 400 });
+		return Response.json({ error: 'No valid fields to update' }, { status: 400 });
 	}
 
 	await todos.updateOne(
@@ -21,13 +21,13 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
 		{ $set: updates }
 	);
 
-	return json({ ok: true });
+	return Response.json({ ok: true });
 };
 
 export const DELETE: RequestHandler = async ({ params, locals }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!locals.user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
 	await todos.deleteOne({ _id: new ObjectId(params.id), userId: locals.user.id });
 
-	return json({ ok: true });
+	return Response.json({ ok: true });
 };

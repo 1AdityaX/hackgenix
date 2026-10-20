@@ -1,11 +1,11 @@
-import { json, type RequestHandler } from '@sveltejs/kit';
-import { db } from '$lib/server/db';
+import type { RequestHandler } from '@sveltejs/kit';
+import { db } from '#lib/server/db.js';
 import { ObjectId } from 'mongodb';
 
 const todos = db.collection('todos');
 
 export const GET: RequestHandler = async ({ locals, url }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!locals.user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
 	const limitParam = url.searchParams.get('limit');
 	const limit = limitParam ? parseInt(limitParam, 10) : 0;
@@ -23,15 +23,15 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 		createdAt: doc.createdAt
 	}));
 
-	return json(mapped);
+	return Response.json(mapped);
 };
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	if (!locals.user) return json({ error: 'Unauthorized' }, { status: 401 });
+	if (!locals.user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
 	const { title } = await request.json();
 	if (!title || typeof title !== 'string') {
-		return json({ error: 'Title is required' }, { status: 400 });
+		return Response.json({ error: 'Title is required' }, { status: 400 });
 	}
 
 	const doc = {
@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	await todos.insertOne(doc);
 
-	return json(
+	return Response.json(
 		{
 			id: doc._id.toHexString(),
 			title: doc.title,
